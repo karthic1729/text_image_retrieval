@@ -41,7 +41,7 @@ class TextEncoder():
         text_features: text embeddings - (n x 512) 
         """
              
-        tokenized_text = self.model.transform(text_data).to(self.device)
+        tokenized_text = self.transform(text_data,truncate=True).to(self.device)
         with torch.no_grad():
             text_features = self.model.encode_text(tokenized_text)
             text_features = text_features.cpu().numpy()
@@ -60,7 +60,8 @@ class TextEncoder():
             embs = self.model.transformer(**txt_tok)[0]
             att = txt_tok['attention_mask']
             embs = (embs * att.unsqueeze(2)).sum(dim=1) / att.sum(dim=1)[:, None]
-        return self.model.LinearTransformation(embs).cpu().numpy()
+            embs = self.model.LinearTransformation(embs).cpu().numpy()
+        return embs
 
     def encode(self,text_data):
         """ 
